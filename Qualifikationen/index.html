@@ -427,4 +427,56 @@
       renderTable();
     }
 
-    function addNewEmployee() 
+    function addNewEmployee() {
+      const name = document.getElementById('newNameInput').value.trim();
+      if (!name) return;
+      
+      const newScores = new Array(categories.length).fill(2);
+      
+      data.push({ name: name, scores: newScores });
+      document.getElementById('newNameInput').value = '';
+      currentEditIndex = data.length - 1;
+      renderUI();
+      document.getElementById('employeeSelect').value = currentEditIndex;
+      handleSelectChange();
+      saveToDrive();
+    }
+
+    function openEditor(index) {
+      const employee = data[index];
+      document.getElementById('editorName').innerText = `Bearbeite: ${employee.name}`;
+      const container = document.getElementById('editorFields');
+      container.innerHTML = '';
+
+      categories.forEach((cat, catIndex) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = "flex justify-between items-center border-b border-slate-100 pb-2 last:border-0";
+        
+        const label = document.createElement('label');
+        label.className = "text-sm text-slate-700 w-1/2 truncate pr-2";
+        label.innerText = cat;
+
+        const select = document.createElement('select');
+        select.className = "text-sm rounded border border-slate-300 bg-white px-2 py-1.5 outline-none focus:border-blue-500 w-1/2 cursor-pointer font-medium";
+        
+        [0, 1, 2].forEach(val => {
+          const opt = document.createElement('option');
+          opt.value = val;
+          opt.innerText = val === 0 ? "0 - Nein" : val === 1 ? "1 - Ja" : "2 - Möglich";
+          if (employee.scores[catIndex] === val) opt.selected = true;
+          select.appendChild(opt);
+        });
+
+        select.addEventListener('change', (e) => {
+          employee.scores[catIndex] = parseInt(e.target.value);
+          renderTable(); 
+        });
+
+        wrapper.appendChild(label);
+        wrapper.appendChild(select);
+        container.appendChild(wrapper);
+      });
+    }
+  </script>
+</body>
+</html>
